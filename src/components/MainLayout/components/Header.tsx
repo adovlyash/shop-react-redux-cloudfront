@@ -33,7 +33,7 @@ export default function Header() {
             underline="none"
             to="/"
           >
-            My Store!
+            Furry Friend (premium food for your dog)
           </Link>
         </Typography>
 
