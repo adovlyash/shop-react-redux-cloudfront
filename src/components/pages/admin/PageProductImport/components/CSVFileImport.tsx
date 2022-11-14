@@ -1,6 +1,7 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { OptionUnstyled } from "@mui/base";
 
 type CSVFileImportProps = {
   url: string;
@@ -28,15 +29,29 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
     console.log("uploadFile to", url);
 
     // Get the presigned URL
-    const response = await fetch(`${url}?name=${encodeURIComponent(file.name)}`);
-    const data = await response.text();
-    console.log("File to upload: ", file.name);
-    console.log("Uploading to: ", data);
-    const result = await fetch(data, {
-      method: "PUT",
-      body: file,
-    });
-    console.log("Result: ", result);
+    const authorization_token = localStorage.getItem('authorization_token');
+    let options: RequestInit = {};
+
+    if (authorization_token) {
+      options.headers = {
+        Authorization: `Bearer ${authorization_token}`,
+      };
+    }
+    const response = await fetch(`${url}?name=${encodeURIComponent(file.name)}`, options);
+    
+    if (response.status >= 200 && response.status < 300) {
+      const data = await response?.text();
+      console.log("File to upload: ", file.name);
+      console.log("Uploading to: ", data);
+      if (data) {
+        const result = await fetch(data, {
+          method: "PUT",
+          body: file,
+        });
+        console.log("Result: ", result);
+      }
+    }
+    
     setFile(undefined);
   };
   return (
